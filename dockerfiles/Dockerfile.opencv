@@ -1,5 +1,5 @@
 # From docker with cuda
-FROM cuda/python:many-2.8-3.5
+FROM cuda/python:cuda8.0-cudnn6-py27-py35
 
 # Install dependencies
 RUN apt-get update \
