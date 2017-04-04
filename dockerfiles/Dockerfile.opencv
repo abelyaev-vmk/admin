@@ -1,0 +1,42 @@
+# From docker with cuda
+FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04 
+
+# Install python3 & python2 first
+RUN apt-get -y update && apt-get install -y nano python python-pip python-dev
+RUN apt-get -y update && apt-get install -y nano python3.5 python3-pip python3-dev
+RUN pip install numpy scipy matplotlib scikit-image scikit-learn cython
+RUN pip3 install numpy scipy matplotlib scikit-image scikit-learn cython
+
+# Install dependencies
+RUN apt-get update \
+	&& apt-get upgrade -y \
+	&& apt-get install -y unzip wget build-essential \
+		cmake git pkg-config libswscale-dev \
+		libtbb2 libtbb-dev libjpeg-dev \
+		libpng12-dev libtiff-dev libjasper-dev \
+		libopencv-dev libgtk-3-dev libdc1394-22 libdc1394-22-dev \
+		libavcodec-dev libavformat-dev libswscale-dev libxine2-dev \
+		libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev \
+		libv4l-dev libtbb-dev libfaac-dev libmp3lame-dev \ 
+		libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev \
+		libvorbis-dev libxvidcore-dev v4l-utils libv4l-dev
+	
+# Install opencv	
+RUN cd / \
+	&& wget https://github.com/opencv/opencv/archive/3.1.0.zip \
+	&& unzip 3.1.0.zip \
+	&& cd opencv-3.1.0 \
+	&& mkdir build \
+	&& cd build \
+	&& cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \ 
+	   -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON \ 
+	   -D WITH_CUBLAS=ON -DCUDA_NVCC_FLAGS="-D_FORCE_INLINES" .. \
+	&& make -j5 \
+	&& make install \
+	&& cd cd ../.. \
+	&& rm 3.1.0.zip
+
+# Install references
+RUN bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.cong'
+RUN ldconfig
+RUN apt-get update
