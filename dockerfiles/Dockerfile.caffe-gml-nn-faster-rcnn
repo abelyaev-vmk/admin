@@ -1,0 +1,23 @@
+FROM caffe-skeleton
+
+# Type your repository
+RUN git clone --recursive https://github.com/ksofiyuk/caffe/ -b faster-rcnn
+RUN git clone --recursive https://github.com/ksofiyuk/gml-nn-detector
+# If cloning dir is not caffe, so you must do
+# RUN mv YOUR_DIR /caffe
+
+# Choose python version and cuddn usage flag. Note, that faster-r-cnn may not working with cudnn
+RUN cd /caffe && cp /Makefile.config.py35-cudnn Makefile.config && find . -type f -exec sed -i -e 's^"hdf5.h"^"hdf5/serial/hdf5.h"^g' -e 's^"hdf5_hl.h"^"hdf5/serial/hdf5_hl.h"^g' '{}' \;
+
+# Install dependecies for python. Rename python2 to python3 if neccessary
+RUN cd /caffe/python && for req in $(cat requirements.txt) pydot; do python3 -m pip install $req; done && python3 -m pip install easydict xgboost
+
+# Install caffe and pycaffe. Choose cores number in -j{n} flag
+RUN cd /caffe && make all -j9 && make pycaffe && ldconfig
+
+# If you want test your system inside builder, uncomment:
+# RUN make test && make runtest
+
+# Share folder
+RUN mkdir /shared
+VOLUME /shared
