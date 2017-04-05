@@ -16,18 +16,18 @@ RUN apt-get update \
 	
 # Install opencv	
 RUN cd / \
-	&& wget https://github.com/opencv/opencv/archive/3.1.0.zip \
-	&& unzip 3.1.0.zip \
-	&& cd opencv-3.1.0 \
+	&& git clone --recursive https://github.com/opencv/opencv \
+	&& cd opencv \
 	&& mkdir build \
 	&& cd build \
-	&& cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \ 
+	&& cmake \ 
+	   -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \ 
 	   -D WITH_TBB=ON -D WITH_V4L=ON -D WITH_OPENGL=ON \ 
-	   -D WITH_CUBLAS=ON -DCUDA_NVCC_FLAGS="-D_FORCE_INLINES" .. \
-	&& make -j5 \
+	   -D WITH_CUBLAS=ON -DCUDA_NVCC_FLAGS="-D_FORCE_INLINES"\ 
+	    .. \
+	&& make -j7 \
 	&& make install \
-	&& cd cd ../.. \
-	&& rm 3.1.0.zip
+	&& cd ../.. 
 
 # Install references
 RUN bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.cong'
