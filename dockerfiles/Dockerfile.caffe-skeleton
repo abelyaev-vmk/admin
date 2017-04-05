@@ -1,6 +1,13 @@
 
 FROM opencv:cuda8-cudnn5-py27-py35
-RUN apt-get update && apt-get install -y --no-install-recommends         build-essential         make         cmake         git         wget         libatlas-base-dev         libboost-all-dev         libgflags-dev         libgoogle-glog-dev         libhdf5-serial-dev         libleveldb-dev         liblmdb-dev         libopencv-dev         libprotobuf-dev         libsnappy-dev         protobuf-compiler         python-dev         python-numpy         python-pip         python-setuptools         python-scipy &&     rm -rf /var/lib/apt/lists/*
+# Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential make cmake git wget libatlas-base-dev libboost-all-dev \
+    libgflags-dev libgoogle-glog-dev libhdf5-serial-dev libleveldb-dev liblmdb-dev \
+    libopencv-dev libprotobuf-dev libsnappy-dev protobuf-compiler \
+    &&  rm -rf /var/lib/apt/lists/*
+
+# Prepare environments
 ENV CAFFE_ROOT=/caffe
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH

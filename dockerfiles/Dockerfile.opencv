@@ -1,4 +1,4 @@
-# From docker with cuda
+# From docker with cuda and cudnn5
 FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04
 
 # Install python2.8 & python3.5
