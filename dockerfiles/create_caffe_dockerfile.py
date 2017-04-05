@@ -175,12 +175,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 RUN git clone --recursive {0.caffe}
 {1}
-cd /caffe/python && for req in $(cat requirements.txt) pydot; do python{2} -m pip install $req; done
-RUN python{2} -m pip install easydict xgboost
+cd /caffe/python && for req in $(cat requirements.txt) pydot; do python{2} -m pip install $req; done && \
+     python{2} -m pip install easydict xgboost
 COPY Makefile.config.{3} /caffe/Makefile.config
-RUN cd /caffe
-RUN make all -j9
-RUN make pycaffe
+RUN cd /caffe && \
+     make all -j9 \
+     make pycaffe
 RUN mkdir /{0.volume}
 VOLUME /{0.volume}
 
@@ -189,12 +189,14 @@ ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
+
+{4}
     """.format(
         args,
         'RUN mv %s /caffe' % caffe_name if caffe_name != 'caffe' else '',
         2 if args.python2 else 3,
         caffe_name,
-        args.volume
+        '' if len(args.repository) < 2 else 'RUN cd / && git clone --recursive %s' % args.repository
     )
 
     with open(join(abspath(dirname(abspath(__file__))), 'Dockerfile.%s' % caffe_name), 'w') as f:
