@@ -7,7 +7,7 @@ def parse():
     parser.add_argument('-use-cudnn', action='store', dest='use_cudnn', default=0)
     parser.add_argument('-python2', action='store', dest='python2', default=1)
     parser.add_argument('-python3', action='store', dest='python3', default=0)
-    parser.add_argument('-python_layers', action='store', dest='python_layers', default=1)
+    parser.add_argument('-python-layers', action='store', dest='python_layers', default=1)
     parser.add_argument('-caffe', action='store', dest='caffe', type=str,
                         default='https://github.com/BVLC/caffe')
     parser.add_argument('-repository', action='store', dest='repository', type=str, default='')
@@ -175,7 +175,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 RUN git clone --recursive {0.caffe}
 {1}
-cd /caffe/python && for req in $(cat requirements.txt) pydot; do python{2} -m pip install $req; done && \
+RUN cd /caffe/python && for req in $(cat requirements.txt) pydot; do python{2} -m pip install $req; done && \
      python{2} -m pip install easydict xgboost
 COPY Makefile.config.{3} /caffe/Makefile.config
 RUN cd /caffe && \
